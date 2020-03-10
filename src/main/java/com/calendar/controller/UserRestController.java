@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@org.springframework.web.bind.annotation.RestController
-public class RestController {
+@RestController
+public class UserRestController {
 
     @Autowired
     UserRepository repository;
@@ -20,8 +20,7 @@ public class RestController {
     }
 
     @GetMapping("/users/sign_in")
-    @ResponseBody
-    public User signIn(@RequestParam(name = "email") String email, @RequestParam(name = "pass") String pass) {
+    public User signIn(@RequestParam String email, @RequestParam String pass) {
         return repository.findByEmailAndAndPass(email, pass)
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
@@ -33,19 +32,16 @@ public class RestController {
     }
 
     @GetMapping("/users")
-    @ResponseBody
     public List<User> getAll() {
         return repository.findAll();
     }
 
     @PutMapping("users/update/{id}")
-    @ResponseBody
-    public User update(@PathVariable Long id, @RequestBody User updateUser) {
+    public User update(@PathVariable Long id, @RequestParam String pass) {
 
         return repository.findById(id)
                 .map(employee -> {
-                    employee.setEmail(updateUser.getEmail());
-                    employee.setPass(updateUser.getPass());
+                    employee.setPass(pass);
                     return repository.save(employee);
                 })
                 .orElseThrow(() -> new UserNotFoundException(id));

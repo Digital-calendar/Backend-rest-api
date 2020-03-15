@@ -3,8 +3,6 @@ package com.calendar.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.springframework.lang.Nullable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

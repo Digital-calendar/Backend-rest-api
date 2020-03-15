@@ -54,7 +54,7 @@ public class EventController {
                         users.add(user);
                     }
                     return eventRepo.save(currentEvent);
-                }).orElseThrow();
+                }).orElseThrow(() -> new EventNotFoundException(id));
     }
 
     @DeleteMapping("/api/events/{id}/edit/delete_user/{userID}")
@@ -65,7 +65,7 @@ public class EventController {
                         currentEvent.getParticipants().removeIf(user -> user.getId().equals(userID));
                     }
                     return eventRepo.save(currentEvent);
-                }).orElseThrow();
+                }).orElseThrow(() -> new EventNotFoundException(id));
     }
 
     private Event updateFields(Event event, Event currentEvent) {

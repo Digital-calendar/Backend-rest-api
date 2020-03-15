@@ -56,14 +56,13 @@ public class Event {
     @Column(nullable = false)
     private String description;
 
-    @Column
+    @Column(nullable = false)
     @ManyToMany
     @JoinTable(
             name = "event_participants",
             joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
     )
-    @Nullable
     private Set<User> participants;
 
     @Override

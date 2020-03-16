@@ -1,20 +1,11 @@
 package com.calendar.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,7 +16,7 @@ import java.util.Set;
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
 
@@ -33,10 +24,8 @@ public class Event {
     private String title;
 
     @Column(nullable = false)
-    private String date;
-
-    @Column(nullable = false)
-    private String time;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    private Timestamp timestamp;
 
     @Column(nullable = false)
     private String location;
@@ -71,8 +60,7 @@ public class Event {
         return isPrivateEvent == event.isPrivateEvent &&
                 Objects.equals(id, event.id) &&
                 Objects.equals(title, event.title) &&
-                Objects.equals(date, event.date) &&
-                Objects.equals(time, event.time) &&
+                Objects.equals(timestamp, event.timestamp) &&
                 Objects.equals(location, event.location) &&
                 eventType == event.eventType &&
                 Objects.equals(contactInfo, event.contactInfo) &&
@@ -81,6 +69,6 @@ public class Event {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, date, time, location, isPrivateEvent, eventType, contactInfo, description);
+        return Objects.hash(id, title, timestamp, location, isPrivateEvent, eventType, contactInfo, description);
     }
 }

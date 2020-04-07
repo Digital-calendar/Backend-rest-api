@@ -21,10 +21,16 @@ public class User {
     private String email;
 
     @Column
+    private String first_name;
+
+    @Column
+    private String last_name;
+
+    @Column
     private String pass;
 
     @Column
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "event_participants",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

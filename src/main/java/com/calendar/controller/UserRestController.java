@@ -2,7 +2,6 @@ package com.calendar.controller;
 
 import com.calendar.entity.Event;
 import com.calendar.entity.User;
-import com.calendar.exception.EventNotFoundException;
 import com.calendar.exception.UserAlreadyRegistered;
 import com.calendar.exception.UserNotFoundException;
 import com.calendar.repository.UserRepository;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController

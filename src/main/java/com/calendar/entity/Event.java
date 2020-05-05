@@ -41,7 +41,13 @@ public class Event {
     private String contactInfo;
 
     @Column(nullable = false)
+    private String contactName;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
+    private int userID;
 
     @Column(nullable = false)
     @ManyToMany

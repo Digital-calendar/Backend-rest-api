@@ -7,6 +7,7 @@ import com.calendar.exception.UserAlreadyRegistered;
 import com.calendar.exception.UserNotFoundException;
 import com.calendar.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,22 +22,24 @@ public class UserRestController {
     UserRepository repository;
 
     @PostMapping("/api/users/sign_up")
-    public User signUp(@RequestBody User newUser) {
+    public ResponseEntity<?> signUp(@RequestBody User newUser) {
         String mail = newUser.getEmail();
         repository.findByEmail(mail).ifPresent(user -> {
             throw new UserAlreadyRegistered(user.getEmail());
         });
 
-        return repository.save(newUser);
+        repository.save(newUser);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/api/users/sign_in")
     public User signIn(@RequestBody User user) {
         String mail = user.getEmail();
         return repository.findByEmail(mail)
-                .map(user1 -> {
-                        if (user1.getPass().equals(user.getPass())) {
-                            return user1;
+                .map(registered_user -> {
+                        if (registered_user.getPass().equals(user.getPass())) {
+                            return registered_user;
                         } else {
                           throw new UserNotFoundException(mail);
                         }

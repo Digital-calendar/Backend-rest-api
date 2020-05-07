@@ -30,6 +30,12 @@ public class User {
     private String pass;
 
     @Column
+    private String position;
+
+    @Column
+    private String city;
+
+    @Column
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "event_participants",

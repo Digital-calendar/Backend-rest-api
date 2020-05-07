@@ -59,6 +59,7 @@ public class UserRestController {
         userState.setLast_name(user.getLast_name());
         userState.setPosition(user.getPosition());
         userState.setCity(user.getCity());
+        userState.setPhone(user.getPhone());
         String pass = user.getPass();
         if (pass != null) {
             userState.setPass(user.getPass());

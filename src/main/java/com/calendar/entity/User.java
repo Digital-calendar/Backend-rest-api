@@ -36,6 +36,9 @@ public class User {
     private String city;
 
     @Column
+    private String phone;
+
+    @Column
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "event_participants",

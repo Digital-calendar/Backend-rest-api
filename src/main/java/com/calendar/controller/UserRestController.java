@@ -45,6 +45,29 @@ public class UserRestController {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    @PutMapping("/api/users/edit")
+    public ResponseEntity<User> editUser(@RequestBody User user) {
+        long userId = user.getId();
+        User userState = repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return new ResponseEntity<>(userSetParams(userState, user), HttpStatus.OK);
+    }
+
+    private User userSetParams(User userState, User user) {
+        userState.setFirst_name(user.getFirst_name());
+        userState.setLast_name(user.getLast_name());
+        userState.setPosition(user.getPosition());
+        userState.setCity(user.getCity());
+        userState.setPhone(user.getPhone());
+        String pass = user.getPass();
+        if (pass != null) {
+            userState.setPass(user.getPass());
+        }
+
+        return repository.save(userState);
+    }
+
     @GetMapping("/api/users/{id}")
     public User getUser(@PathVariable Long id) {
         return repository.findById(id)

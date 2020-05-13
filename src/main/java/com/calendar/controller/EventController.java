@@ -85,6 +85,11 @@ public class EventController {
                 }).orElseThrow(() -> new EventNotFoundException(id));
     }
 
+    @DeleteMapping("/api/events/delete/{id}")
+    public void deleteEvent(@PathVariable Long id) {
+        eventRepo.deleteById(id);
+    }
+
     private Event updateFields(Event event, Event currentEvent) {
         currentEvent.setTitle(event.getTitle());
 //        currentEvent.setDate(event.getDate());

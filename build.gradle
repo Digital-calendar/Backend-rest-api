@@ -22,8 +22,14 @@ repositories {
 	mavenCentral()
 }
 
+//ext {
+//	set('keycloakVersion', '4.8.3.Final')
+//}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -32,6 +38,12 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+}
+
+dependencyManagement {
+//	imports {
+//		mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}"
+//	}
 }
 
 test {

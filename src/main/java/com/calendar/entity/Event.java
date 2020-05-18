@@ -43,7 +43,7 @@ public class Event {
     @Column(nullable = false)
     private String contactName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
     private String description;
 
     @Column(nullable = false)

@@ -108,6 +108,7 @@ public class EventController {
     }
 
     private Event checkTime(Event newEvent) {
+        if (newEvent.getTimestamp_end() == null) return newEvent;
         for (Event i: eventRepo.findAll()) {
             if (!(i.getTimestamp_begin().after(newEvent.getTimestamp_end()) ||
                 i.getTimestamp_end().before(newEvent.getTimestamp_begin()) ||

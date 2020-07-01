@@ -35,7 +35,7 @@ public class EventController {
         List<User> users = userRepo.findAll();
         event.getParticipants().removeIf(user -> !users.contains(user));
 
-        return eventRepo.save(checkTime(event));
+        return eventRepo.save(event);
     }
 
     @GetMapping("/api/events")
@@ -59,7 +59,7 @@ public class EventController {
     @PutMapping("/api/events/{id}/edit")
     public Event updateEvent(@PathVariable Long id, @RequestBody Event event) {
         return eventRepo.findById(id)
-                .map(currentEvent -> eventRepo.save(updateFields(checkTime(event), currentEvent)))
+                .map(currentEvent -> eventRepo.save(updateFields(event, currentEvent)))
                 .orElseThrow(() -> new EventNotFoundException(id));
     }
 
@@ -107,16 +107,4 @@ public class EventController {
         return currentEvent;
     }
 
-    private Event checkTime(Event newEvent) {
-        if (newEvent.getTimestamp_end() == null) return newEvent;
-        for (Event i: eventRepo.findAll()) {
-            if (!(i.getTimestamp_begin().after(newEvent.getTimestamp_end()) ||
-                i.getTimestamp_end().before(newEvent.getTimestamp_begin()) ||
-                i.getTimestamp_end().equals(newEvent.getTimestamp_begin()) ||
-                i.getTimestamp_begin().equals(newEvent.getTimestamp_end()))) {
-                throw new InvalidEventTimeException(newEvent.getId(), i.getId());
-            }
-        }
-        return newEvent;
-    }
 }

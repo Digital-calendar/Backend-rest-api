@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 
@@ -61,6 +62,9 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
     )
     private Set<User> participants;
+
+    @Column
+    private ArrayList<String> fileName;
 
     @Override
     public boolean equals(Object o) {

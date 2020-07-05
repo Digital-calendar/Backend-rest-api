@@ -103,7 +103,7 @@ public class EventController {
         currentEvent.setContactInfo(event.getContactInfo());
         currentEvent.setDescription(event.getDescription());
         currentEvent.setParticipants(event.getParticipants());
-
+        currentEvent.setFileName(event.getFileName());
         return currentEvent;
     }
 

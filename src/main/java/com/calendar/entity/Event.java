@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,7 +26,11 @@ public class Event {
 
     @Column(nullable = false)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm")
-    private Timestamp timestamp;
+    private Timestamp timestamp_begin;
+
+    @Column
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    private Timestamp timestamp_end;
 
     @Column(nullable = false)
     private String location;
@@ -58,6 +63,7 @@ public class Event {
     )
     private Set<User> participants;
 
+
     @Column(nullable = true)
     @ManyToMany
     @JoinTable(
@@ -67,6 +73,10 @@ public class Event {
     )
     private Set<Group> groups;
 
+    @Column
+    private ArrayList<String> fileName;
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,7 +85,8 @@ public class Event {
         return isPrivateEvent == event.isPrivateEvent &&
                 Objects.equals(id, event.id) &&
                 Objects.equals(title, event.title) &&
-                Objects.equals(timestamp, event.timestamp) &&
+                Objects.equals(timestamp_begin, event.timestamp_begin) &&
+                Objects.equals(timestamp_end, event.timestamp_end) &&
                 Objects.equals(location, event.location) &&
                 eventType == event.eventType &&
                 Objects.equals(contactInfo, event.contactInfo) &&
@@ -84,6 +95,6 @@ public class Event {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, timestamp, location, isPrivateEvent, eventType, contactInfo, description);
+        return Objects.hash(id, title, timestamp_begin, timestamp_end, location, isPrivateEvent, eventType, contactInfo, description);
     }
 }

@@ -4,6 +4,7 @@ import com.calendar.entity.Event;
 import com.calendar.entity.Group;
 import com.calendar.entity.User;
 import com.calendar.exception.EventNotFoundException;
+import com.calendar.exception.InvalidEventTimeException;
 import com.calendar.repository.EventRepository;
 import com.calendar.repository.GroupRepository;
 import com.calendar.repository.UserRepository;
@@ -143,14 +144,19 @@ public class EventController {
         currentEvent.setTitle(event.getTitle());
 //        currentEvent.setDate(event.getDate());
 //        currentEvent.setTime(event.getTime());
-        currentEvent.setTimestamp(event.getTimestamp());
+        currentEvent.setTimestamp_begin(event.getTimestamp_begin());
+        currentEvent.setTimestamp_end(event.getTimestamp_end());
         currentEvent.setLocation(event.getLocation());
         currentEvent.setPrivateEvent(event.isPrivateEvent());
         currentEvent.setEventType(event.getEventType());
         currentEvent.setContactInfo(event.getContactInfo());
         currentEvent.setDescription(event.getDescription());
         currentEvent.setParticipants(event.getParticipants());
+
         currentEvent.setGroups(event.getGroups());
+
+
+        currentEvent.setFileName(event.getFileName());
 
         return currentEvent;
     }

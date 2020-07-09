@@ -63,8 +63,19 @@ public class Event {
     )
     private Set<User> participants;
 
+
+    @Column(nullable = true)
+    @ManyToMany
+    @JoinTable(
+            name = "event_groups",
+            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id")
+    )
+    private Set<Group> groups;
+
     @Column
     private ArrayList<String> fileName;
+
 
     @Override
     public boolean equals(Object o) {

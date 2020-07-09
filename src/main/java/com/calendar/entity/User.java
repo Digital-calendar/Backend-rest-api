@@ -30,7 +30,7 @@ public class User {
     private String pass;
 
     @Column
-    private String position;
+    private Positions position;
 
     @Column
     private String city;

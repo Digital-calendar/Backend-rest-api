@@ -1,10 +1,12 @@
 package com.calendar.controller;
 
 import com.calendar.entity.Event;
+import com.calendar.entity.Group;
 import com.calendar.entity.User;
 import com.calendar.exception.EventNotFoundException;
 import com.calendar.exception.InvalidEventTimeException;
 import com.calendar.repository.EventRepository;
+import com.calendar.repository.GroupRepository;
 import com.calendar.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +27,9 @@ public class EventController {
 
     @Autowired
     private EventRepository eventRepo;
+
+    @Autowired
+    private GroupRepository groupRepo;
 
     @Autowired
     private UserRepository userRepo;
@@ -56,6 +61,13 @@ public class EventController {
                 .orElseThrow(() -> new EventNotFoundException(id));
     }
 
+    @GetMapping("/api/events/{id}/groups")
+    public Set<Group> getGroups(@PathVariable Long id) {
+        return eventRepo.findById(id)
+                .map(Event::getGroups)
+                .orElseThrow(() -> new EventNotFoundException(id));
+    }
+
     @PutMapping("/api/events/{id}/edit")
     public Event updateEvent(@PathVariable Long id, @RequestBody Event event) {
         return eventRepo.findById(id)
@@ -75,12 +87,49 @@ public class EventController {
                 }).orElseThrow(() -> new EventNotFoundException(id));
     }
 
+    @PutMapping("/api/events/{id}/edit/add_group")
+    public Event addGroup(@PathVariable Long id, @RequestBody Group group) {
+        return eventRepo.findById(id)
+                .map(currentEvent -> {
+                    Set<Group> groups = currentEvent.getGroups();
+                    if (groups != null) {
+                        groups.add(group);
+                    }
+                    return eventRepo.save(currentEvent);
+                }).orElseThrow(() -> new EventNotFoundException(id));
+    }
+
+    @PutMapping("/api/events/{id}/edit/add_all")
+    public Event addAll(@PathVariable Long id) {
+        return eventRepo.findById(id)
+                .map(currentEvent -> {
+                    Set<Group> groups = currentEvent.getGroups();
+                    Set<User> users = currentEvent.getParticipants();
+                    if (groups != null && users != null) {
+                        groups.addAll(groupRepo.findAll());
+                        users.addAll(userRepo.findAll());
+                    }
+                    return eventRepo.save(currentEvent);
+                }).orElseThrow(() -> new EventNotFoundException(id));
+    }
+
     @DeleteMapping("/api/events/{id}/edit/delete_user/{userID}")
     public Event deleteUser(@PathVariable Long id, @PathVariable Long userID) {
         return eventRepo.findById(id)
                 .map(currentEvent -> {
                     if (currentEvent.getParticipants() != null) {
                         currentEvent.getParticipants().removeIf(user -> user.getId().equals(userID));
+                    }
+                    return eventRepo.save(currentEvent);
+                }).orElseThrow(() -> new EventNotFoundException(id));
+    }
+
+    @DeleteMapping("/api/events/{id}/edit/delete_group/{groupID}")
+    public Event deleteGroup(@PathVariable Long id, @PathVariable Long groupID) {
+        return eventRepo.findById(id)
+                .map(currentEvent -> {
+                    if (currentEvent.getGroups() != null) {
+                        currentEvent.getGroups().removeIf(group -> group.getId().equals(groupID));
                     }
                     return eventRepo.save(currentEvent);
                 }).orElseThrow(() -> new EventNotFoundException(id));
@@ -103,7 +152,12 @@ public class EventController {
         currentEvent.setContactInfo(event.getContactInfo());
         currentEvent.setDescription(event.getDescription());
         currentEvent.setParticipants(event.getParticipants());
+
+        currentEvent.setGroups(event.getGroups());
+
+
         currentEvent.setFileName(event.getFileName());
+
         return currentEvent;
     }
 

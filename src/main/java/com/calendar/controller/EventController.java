@@ -1,6 +1,7 @@
 package com.calendar.controller;
 
 import com.calendar.entity.Event;
+import com.calendar.entity.EventType;
 import com.calendar.entity.Group;
 import com.calendar.entity.User;
 import com.calendar.exception.EventNotFoundException;
@@ -17,8 +18,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -39,8 +42,25 @@ public class EventController {
 
         List<User> users = userRepo.findAll();
         event.getParticipants().removeIf(user -> !users.contains(user));
-
+        if (event.getDeadline() != null) {
+            createDeadlineEvent(event);
+        }
         return eventRepo.save(event);
+    }
+
+    public void createDeadlineEvent(Event event) {
+        Event deadlineEvent = new Event();
+        updateFields(event, deadlineEvent);
+        deadlineEvent.setTitle("Дедлайн: " + event.getTitle());
+        deadlineEvent.setEventType(event.getEventType());
+        deadlineEvent.setDeadlineEvent(true);
+        deadlineEvent.setTimestamp_begin(event.getDeadline());
+        deadlineEvent.setTimestamp_end(event.getDeadline());
+        deadlineEvent.setDeadline(null);
+        deadlineEvent.setUserID(event.getUserID());
+        event.setDeadlineEvent(false);
+        eventRepo.save(deadlineEvent);
+        event.setDeadlineEventId(deadlineEvent.getId());
     }
 
     @GetMapping("/api/events")
@@ -70,6 +90,33 @@ public class EventController {
 
     @PutMapping("/api/events/{id}/edit")
     public Event updateEvent(@PathVariable Long id, @RequestBody Event event) {
+        Optional<Event> current = eventRepo.findById(id);
+        if (current.isPresent() && current.get().isDeadlineEvent()) {
+            event.setDeadline(null);
+            event.setDeadlineEvent(true);
+            event.setTitle(current.get().getTitle());
+            event.setEventType(event.getEventType());
+            updateFields(event, current.get());
+            return eventRepo.save(current.get());
+        }
+
+        if (current.isPresent() && !current.get().isDeadlineEvent() && current.get().getDeadline() != null) {
+            if (event.getDeadline() != current.get().getDeadline()) {
+                if (event.getDeadline() == null) {
+                    eventRepo.deleteById(current.get().getDeadlineEventId());
+                    current.get().setDeadline(null);
+                } else {
+                    createDeadlineEvent(event);
+                    eventRepo.deleteById(current.get().getDeadlineEventId());
+                }
+            }
+        }
+
+        if (current.isPresent() && current.get().getDeadline() == null && event.getDeadline() != null) {
+            createDeadlineEvent(event);
+            current.get().setDeadline(event.getTimestamp_begin());
+        }
+
         return eventRepo.findById(id)
                 .map(currentEvent -> eventRepo.save(updateFields(event, currentEvent)))
                 .orElseThrow(() -> new EventNotFoundException(id));
@@ -150,14 +197,23 @@ public class EventController {
         currentEvent.setPrivateEvent(event.isPrivateEvent());
         currentEvent.setEventType(event.getEventType());
         currentEvent.setContactInfo(event.getContactInfo());
+        currentEvent.setContactName(event.getContactName());
         currentEvent.setDescription(event.getDescription());
         currentEvent.setParticipants(event.getParticipants());
 
         currentEvent.setGroups(event.getGroups());
 
-
+        currentEvent.setDeadlineEventId(event.getDeadlineEventId());
+        currentEvent.setDeadlineEvent(event.isDeadlineEvent());
+        currentEvent.setDeadline(event.getDeadline());
         currentEvent.setFileName(event.getFileName());
-
+        if (currentEvent.isDeadlineEvent()) {
+            currentEvent.setDeadline(null);
+        } else {
+            if (eventRepo.findById(currentEvent.getDeadlineEventId()).isPresent()) {
+                eventRepo.findById(currentEvent.getDeadlineEventId()).get().setDeadline(null);
+            }
+        }
         return currentEvent;
     }
 

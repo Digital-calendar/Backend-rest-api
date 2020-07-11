@@ -97,6 +97,7 @@ public class EventController {
             event.setTitle(current.get().getTitle());
             event.setEventType(event.getEventType());
             updateFields(event, current.get());
+            eventRepo.findByDeadlineEventId(current.get().getId()).get().setDeadline(current.get().getTimestamp_begin());
             return eventRepo.save(current.get());
         }
 
@@ -184,6 +185,13 @@ public class EventController {
 
     @DeleteMapping("/api/events/delete/{id}")
     public void deleteEvent(@PathVariable Long id) {
+        Optional<Event> event = eventRepo.findById(id);
+        if (event.isPresent() && event.get().getDeadline() != null) {
+            eventRepo.deleteById(event.get().getDeadlineEventId());
+        }
+        if (event.isPresent() && event.get().isDeadlineEvent()) {
+            eventRepo.findByDeadlineEventId(event.get().getId()).get().setDeadline(null);
+        }
         eventRepo.deleteById(id);
     }
 

@@ -1,6 +1,7 @@
 package com.calendar.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,11 +33,22 @@ public class Event {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     private Timestamp timestamp_end;
 
+    @Column
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    private Timestamp deadline;
+
+    @Column
+    @JsonIgnore
+    private long deadlineEventId;
+
     @Column(nullable = false)
     private String location;
 
     @Column(nullable = false)
     private boolean isPrivateEvent;
+
+    @Column
+    private boolean isDeadlineEvent;
 
     @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
